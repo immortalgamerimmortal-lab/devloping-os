@@ -1,0 +1,56 @@
+dev.serein.prototype.app-activity-1.10.0-0 C:\Users\home\.gradle\caches\9.8.1\transforms\03f8c861076c640afc0d0c6bf6cba00c\transformed\activity-1.10.0\res
+dev.serein.prototype.app-material-icons-core-release-1 C:\Users\home\.gradle\caches\9.8.1\transforms\0832973eb049f166faf28f610330abd1\transformed\material-icons-core-release\res
+dev.serein.prototype.app-runtime-saveable-release-2 C:\Users\home\.gradle\caches\9.8.1\transforms\0c4c456aa15cadfed3b7d1fd456f1ec7\transformed\runtime-saveable-release\res
+dev.serein.prototype.app-runtime-release-3 C:\Users\home\.gradle\caches\9.8.1\transforms\10437f7132e4f7d56dda9a97477e449e\transformed\runtime-release\res
+dev.serein.prototype.app-animation-release-4 C:\Users\home\.gradle\caches\9.8.1\transforms\1c80dc97162d30c278e57132ef87296e\transformed\animation-release\res
+dev.serein.prototype.app-lifecycle-viewmodel-savedstate-2.8.3-5 C:\Users\home\.gradle\caches\9.8.1\transforms\1f2312fca4342dfae5346ceece32d53b\transformed\lifecycle-viewmodel-savedstate-2.8.3\res
+dev.serein.prototype.app-profileinstaller-1.4.0-6 C:\Users\home\.gradle\caches\9.8.1\transforms\2033c0c8a8efb6ae3465451690e93c76\transformed\profileinstaller-1.4.0\res
+dev.serein.prototype.app-animation-core-release-7 C:\Users\home\.gradle\caches\9.8.1\transforms\22c30c5947871ba03159205e3e6e0af4\transformed\animation-core-release\res
+dev.serein.prototype.app-biometric-1.1.0-8 C:\Users\home\.gradle\caches\9.8.1\transforms\295d4030e132f0f8490dcf64bcd02d42\transformed\biometric-1.1.0\res
+dev.serein.prototype.app-savedstate-ktx-1.2.1-9 C:\Users\home\.gradle\caches\9.8.1\transforms\2978dd6d94414e0783f4526550d2edef\transformed\savedstate-ktx-1.2.1\res
+dev.serein.prototype.app-ui-graphics-release-10 C:\Users\home\.gradle\caches\9.8.1\transforms\3565c9c8752b3b8cf51b977fe3c9f6c7\transformed\ui-graphics-release\res
+dev.serein.prototype.app-lifecycle-livedata-2.8.3-11 C:\Users\home\.gradle\caches\9.8.1\transforms\3756b3d80b29b3884642835f9768abb7\transformed\lifecycle-livedata-2.8.3\res
+dev.serein.prototype.app-core-runtime-2.2.0-12 C:\Users\home\.gradle\caches\9.8.1\transforms\3ab86fc7104bc5a3fd7da1d32c695d11\transformed\core-runtime-2.2.0\res
+dev.serein.prototype.app-appcompat-resources-1.7.0-13 C:\Users\home\.gradle\caches\9.8.1\transforms\3bd4d883007648675731592a7e724220\transformed\appcompat-resources-1.7.0\res
+dev.serein.prototype.app-material-ripple-release-14 C:\Users\home\.gradle\caches\9.8.1\transforms\3c5e1f50beef769cb0a5b2f6e4dbfcbc\transformed\material-ripple-release\res
+dev.serein.prototype.app-customview-poolingcontainer-1.0.0-15 C:\Users\home\.gradle\caches\9.8.1\transforms\40882a3ed653f224689ca4d6159cac82\transformed\customview-poolingcontainer-1.0.0\res
+dev.serein.prototype.app-ui-unit-release-16 C:\Users\home\.gradle\caches\9.8.1\transforms\4681f7bce444194e2279d18e568a432d\transformed\ui-unit-release\res
+dev.serein.prototype.app-material-icons-extended-release-17 C:\Users\home\.gradle\caches\9.8.1\transforms\471cd167246c859dffdb77662227704d\transformed\material-icons-extended-release\res
+dev.serein.prototype.app-ui-util-release-18 C:\Users\home\.gradle\caches\9.8.1\transforms\4aa6412a08d309cdef53e1c69574b129\transformed\ui-util-release\res
+dev.serein.prototype.app-lifecycle-process-2.8.3-19 C:\Users\home\.gradle\caches\9.8.1\transforms\4e286cc7c38b08763038937ed954f61d\transformed\lifecycle-process-2.8.3\res
+dev.serein.prototype.app-foundation-release-20 C:\Users\home\.gradle\caches\9.8.1\transforms\5809f5ce5bf3c772eaea582699ddfe81\transformed\foundation-release\res
+dev.serein.prototype.app-ui-text-release-21 C:\Users\home\.gradle\caches\9.8.1\transforms\5b3621c40ef8068560ff3dd85e589be6\transformed\ui-text-release\res
+dev.serein.prototype.app-annotation-experimental-1.4.1-22 C:\Users\home\.gradle\caches\9.8.1\transforms\5e3bed50ea736417a807aea032e1cb9a\transformed\annotation-experimental-1.4.1\res
+dev.serein.prototype.app-emoji2-views-helper-1.3.0-23 C:\Users\home\.gradle\caches\9.8.1\transforms\63f444b34c08cf0a0bf1a86479b722b1\transformed\emoji2-views-helper-1.3.0\res
+dev.serein.prototype.app-material-release-24 C:\Users\home\.gradle\caches\9.8.1\transforms\6eaf94e5fca0a408b3ec335bf5d607b5\transformed\material-release\res
+dev.serein.prototype.app-ui-tooling-release-25 C:\Users\home\.gradle\caches\9.8.1\transforms\823fc663f397dc601abe2e0435321522\transformed\ui-tooling-release\res
+dev.serein.prototype.app-fragment-1.5.4-26 C:\Users\home\.gradle\caches\9.8.1\transforms\87df222b855763c67dad0045664559c2\transformed\fragment-1.5.4\res
+dev.serein.prototype.app-lifecycle-livedata-core-ktx-2.8.3-27 C:\Users\home\.gradle\caches\9.8.1\transforms\934360e62d7b547356719ebb6b87e327\transformed\lifecycle-livedata-core-ktx-2.8.3\res
+dev.serein.prototype.app-core-ktx-1.13.1-28 C:\Users\home\.gradle\caches\9.8.1\transforms\99a2964de40950cbc481c5ade2bead18\transformed\core-ktx-1.13.1\res
+dev.serein.prototype.app-ui-release-29 C:\Users\home\.gradle\caches\9.8.1\transforms\ac72dda62ad50d11d435a8dedad55503\transformed\ui-release\res
+dev.serein.prototype.app-appcompat-1.7.0-30 C:\Users\home\.gradle\caches\9.8.1\transforms\ad5cfbf77136991872360eaaacb7934c\transformed\appcompat-1.7.0\res
+dev.serein.prototype.app-graphics-path-1.0.1-31 C:\Users\home\.gradle\caches\9.8.1\transforms\ad6607728fe34e4a41b98aadac3cb800\transformed\graphics-path-1.0.1\res
+dev.serein.prototype.app-foundation-layout-release-32 C:\Users\home\.gradle\caches\9.8.1\transforms\b2dab983b4f9cd615149e8afe8606a46\transformed\foundation-layout-release\res
+dev.serein.prototype.app-material3-release-33 C:\Users\home\.gradle\caches\9.8.1\transforms\b9c3a2b9f5e6a6862dceb1ed45569405\transformed\material3-release\res
+dev.serein.prototype.app-emoji2-1.3.0-34 C:\Users\home\.gradle\caches\9.8.1\transforms\bec450a57f8e080764f5b02ac684da8a\transformed\emoji2-1.3.0\res
+dev.serein.prototype.app-lifecycle-runtime-compose-release-35 C:\Users\home\.gradle\caches\9.8.1\transforms\c2023e525c55d6852cd9c04fd5e2d356\transformed\lifecycle-runtime-compose-release\res
+dev.serein.prototype.app-lifecycle-viewmodel-release-36 C:\Users\home\.gradle\caches\9.8.1\transforms\cc6109470219c9a95ff44e9bb1d0a4a1\transformed\lifecycle-viewmodel-release\res
+dev.serein.prototype.app-activity-compose-1.10.0-37 C:\Users\home\.gradle\caches\9.8.1\transforms\cc64dd11ba9b24698117a384af1e1480\transformed\activity-compose-1.10.0\res
+dev.serein.prototype.app-lifecycle-runtime-release-38 C:\Users\home\.gradle\caches\9.8.1\transforms\db9e34b4f8e1012db1a43bd57fa7b3b0\transformed\lifecycle-runtime-release\res
+dev.serein.prototype.app-ui-geometry-release-39 C:\Users\home\.gradle\caches\9.8.1\transforms\e03ff7c58c84080f8397d79385032c2d\transformed\ui-geometry-release\res
+dev.serein.prototype.app-activity-ktx-1.10.0-40 C:\Users\home\.gradle\caches\9.8.1\transforms\e2f6e0099b2391cf31747ddb77049505\transformed\activity-ktx-1.10.0\res
+dev.serein.prototype.app-lifecycle-runtime-ktx-release-41 C:\Users\home\.gradle\caches\9.8.1\transforms\e36f17aafdd39391018db7a22d4b28e3\transformed\lifecycle-runtime-ktx-release\res
+dev.serein.prototype.app-startup-runtime-1.1.1-42 C:\Users\home\.gradle\caches\9.8.1\transforms\e575db8ea4962fb99a61f7fd88f65607\transformed\startup-runtime-1.1.1\res
+dev.serein.prototype.app-lifecycle-viewmodel-ktx-2.8.3-43 C:\Users\home\.gradle\caches\9.8.1\transforms\e588bac64551606652f71613e1fade12\transformed\lifecycle-viewmodel-ktx-2.8.3\res
+dev.serein.prototype.app-ui-tooling-data-release-44 C:\Users\home\.gradle\caches\9.8.1\transforms\e7284d21527e5d4a7d97107c08096d17\transformed\ui-tooling-data-release\res
+dev.serein.prototype.app-ui-tooling-preview-release-45 C:\Users\home\.gradle\caches\9.8.1\transforms\e8cded4766a71c0dfc5f9fc72aef9be4\transformed\ui-tooling-preview-release\res
+dev.serein.prototype.app-core-1.13.1-46 C:\Users\home\.gradle\caches\9.8.1\transforms\edf0408eda0185c9b3b179ae968a15da\transformed\core-1.13.1\res
+dev.serein.prototype.app-savedstate-1.2.1-47 C:\Users\home\.gradle\caches\9.8.1\transforms\ef78890a84dda1e466e3f3a14b2da36c\transformed\savedstate-1.2.1\res
+dev.serein.prototype.app-lifecycle-livedata-core-2.8.3-48 C:\Users\home\.gradle\caches\9.8.1\transforms\f195a7e030c1d4e828258e4ada099929\transformed\lifecycle-livedata-core-2.8.3\res
+dev.serein.prototype.app-pngs-49 C:\Users\home\Desktop\devloping os\app\build\generated\res\pngs\debug
+dev.serein.prototype.app-resValues-50 C:\Users\home\Desktop\devloping os\app\build\generated\res\resValues\debug
+dev.serein.prototype.app-packageDebugResources-51 C:\Users\home\Desktop\devloping os\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+dev.serein.prototype.app-packageDebugResources-52 C:\Users\home\Desktop\devloping os\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+dev.serein.prototype.app-debug-53 C:\Users\home\Desktop\devloping os\app\build\intermediates\merged_res\debug\mergeDebugResources
+dev.serein.prototype.app-debug-54 C:\Users\home\Desktop\devloping os\app\src\debug\res
+dev.serein.prototype.app-main-55 C:\Users\home\Desktop\devloping os\app\src\main\res

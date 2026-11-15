@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "dev.serein.prototype.app-mergeDebugResources-51:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\home\\.gradle\\caches\\9.8.1\\transforms\\ad5cfbf77136991872360eaaacb7934c\\transformed\\appcompat-1.7.0\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    }
+                }
+            ]
+        }
+    ]
+}
