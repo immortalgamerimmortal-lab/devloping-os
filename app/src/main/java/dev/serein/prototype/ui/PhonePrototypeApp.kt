@@ -1,6 +1,13 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package dev.serein.prototype.ui
 
+import android.animation.ValueAnimator
+import android.database.ContentObserver
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
@@ -19,19 +26,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,13 +57,9 @@ import androidx.compose.material.icons.rounded.CameraAlt
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.DarkMode
-import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.FlashlightOn
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Phone
@@ -64,18 +70,13 @@ import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.SignalWifi4Bar
-import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.Sms
-import androidx.compose.material.icons.rounded.Speaker
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.StopScreenShare
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Widgets
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -88,6 +89,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -107,7 +109,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
@@ -124,6 +126,8 @@ private data class DemoApp(
 )
 
 private data class DemoNotification(val id: Int, val title: String, val body: String, val group: String)
+
+private data class HomeFolder(val name: String, val apps: List<DemoApp>)
 
 private val demoApps = listOf(
     DemoApp("Phone", Icons.Rounded.Phone, Color(0xFF4A9A7B), "A call interface preview. Calls are not placed."),
@@ -144,6 +148,31 @@ private val accents = listOf(
     Color(0xFF9B648D),
     Color(0xFFB47747),
 )
+
+@Composable
+private fun rememberSystemReduceMotion(): Boolean {
+    val context = LocalContext.current
+    val reduceMotion = remember(context) {
+        mutableStateOf(!ValueAnimator.areAnimatorsEnabled())
+    }
+
+    DisposableEffect(context) {
+        val observer = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) {
+                reduceMotion.value = !ValueAnimator.areAnimatorsEnabled()
+            }
+        }
+        val resolver = context.contentResolver
+        resolver.registerContentObserver(
+            Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE),
+            false,
+            observer,
+        )
+        onDispose { resolver.unregisterContentObserver(observer) }
+    }
+
+    return reduceMotion.value
+}
 
 @Composable
 fun PhonePrototypeApp(onRequestBiometric: ((() -> Unit) -> Unit)) {
@@ -179,7 +208,8 @@ fun PhonePrototypeApp(onRequestBiometric: ((() -> Unit) -> Unit)) {
     val visitedApps = remember { mutableStateListOf<String>() }
 
     SereinTheme(darkTheme = darkMode, accent = accents[accentIndex], highContrast = highContrast) {
-        val context = LocalContext.current
+        val systemReduceMotion = rememberSystemReduceMotion()
+        val animationsReduced = reduceMotion || systemReduceMotion
         val backgroundColors = if (darkMode) {
             listOf(Color(0xFF17272D), Color(0xFF19202B), Color(0xFF272033))
         } else {
@@ -199,14 +229,14 @@ fun PhonePrototypeApp(onRequestBiometric: ((() -> Unit) -> Unit)) {
             Modifier
                 .fillMaxSize()
                 .background(Brush.linearGradient(backgroundColors))
-                .windowInsetsPadding(WindowInsets.navigationBars)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(horizontal = 20.dp),
         ) {
             AmbientOrbs()
             AnimatedContent(
                 targetState = screen,
                 transitionSpec = {
-                    if (reduceMotion) {
+                    if (animationsReduced) {
                         fadeIn() togetherWith fadeOut()
                     } else {
                         fadeIn(animationSpec = spring(stiffness = 420f)) togetherWith
@@ -235,7 +265,7 @@ fun PhonePrototypeApp(onRequestBiometric: ((() -> Unit) -> Unit)) {
                         notifications = notificationItems.size,
                         largerText = largerText,
                         transparency = transparency,
-                        reduceMotion = reduceMotion,
+                        reduceMotion = animationsReduced,
                         onPage = { homePage = (homePage + it).coerceIn(0, 1) },
                         onLaunch = { app ->
                             openedApp = app
@@ -359,7 +389,7 @@ private fun AmbientOrbs() {
 }
 
 @Composable
-private fun ScreenColumn(content: @Composable () -> Unit) {
+private fun ScreenColumn(content: @Composable ColumnScope.() -> Unit) {
     Column(
         Modifier.fillMaxSize().padding(top = 14.dp, bottom = 10.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -384,8 +414,8 @@ private fun WelcomeScreen(darkMode: Boolean, onTheme: (Boolean) -> Unit, onConti
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            ThemeChoice("Light", !darkMode) { onTheme(false) }
-            ThemeChoice("Dark", darkMode) { onTheme(true) }
+            ThemeChoice("Light", !darkMode, Modifier.weight(1f)) { onTheme(false) }
+            ThemeChoice("Dark", darkMode, Modifier.weight(1f)) { onTheme(true) }
         }
         Spacer(Modifier.weight(1f))
         Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().height(54.dp)) {
@@ -396,8 +426,13 @@ private fun WelcomeScreen(darkMode: Boolean, onTheme: (Boolean) -> Unit, onConti
 }
 
 @Composable
-private fun ThemeChoice(label: String, selected: Boolean, onClick: () -> Unit) {
-    OutlinedButton(onClick = onClick, modifier = Modifier.weight(1f)) {
+private fun ThemeChoice(
+    label: String,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    OutlinedButton(onClick = onClick, modifier = modifier) {
         if (selected) Icon(Icons.Rounded.Check, null, Modifier.size(18.dp))
         Text(label, Modifier.padding(start = 6.dp))
     }
@@ -411,6 +446,7 @@ private fun LockScreen(
     onBiometric: () -> Unit,
 ) {
     var dragAmount by remember { mutableFloatStateOf(0f) }
+    var showEmergencyInfo by remember { mutableStateOf(false) }
     val clock = remember { java.text.SimpleDateFormat("h:mm", java.util.Locale.getDefault()).format(java.util.Date()) }
     ScreenColumn {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -437,7 +473,7 @@ private fun LockScreen(
         }
         Spacer(Modifier.weight(0.4f))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            CircleAction(Icons.Rounded.Phone, "Emergency", onClick = {})
+            CircleAction(Icons.Rounded.Phone, "Emergency info") { showEmergencyInfo = true }
             Column(
                 Modifier
                     .weight(1f)
@@ -452,9 +488,20 @@ private fun LockScreen(
             ) {
                 Icon(Icons.Rounded.Fingerprint, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(30.dp))
                 Text("Swipe up to preview", style = MaterialTheme.typography.labelSmall)
+                TextButton(onClick = onBiometric) { Text("Try device biometrics") }
             }
-            CircleAction(Icons.Rounded.CameraAlt, "Camera demo", onClick = onSwipeUp)
+            CircleAction(Icons.Rounded.Apps, "Apps preview", onClick = onSwipeUp)
         }
+    }
+    if (showEmergencyInfo) {
+        AlertDialog(
+            onDismissRequest = { showEmergencyInfo = false },
+            title = { Text("Emergency access") },
+            text = { Text("This app preview cannot place emergency calls. Use the emergency controls on your device's real lock screen.") },
+            confirmButton = {
+                TextButton(onClick = { showEmergencyInfo = false }) { Text("Understood") }
+            },
+        )
     }
 }
 
@@ -479,9 +526,19 @@ private fun HomeScreen(
     onLock: () -> Unit,
 ) {
     var editMode by remember { mutableStateOf(false) }
+    var showFolderEditor by remember { mutableStateOf(false) }
+    var folderName by remember { mutableStateOf("") }
+    var openFolder by remember { mutableStateOf<HomeFolder?>(null) }
+    var dockSlotToEdit by remember { mutableIntStateOf(-1) }
+    val selectedFolderApps = remember { mutableStateListOf<String>() }
+    val folders = remember { mutableStateListOf<HomeFolder>() }
+    val dockApps = remember {
+        mutableStateListOf(demoApps[0], demoApps[1], demoApps[8])
+    }
     var dragOffsetX by remember { mutableFloatStateOf(0f) }
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
     var dragIndex by remember { mutableIntStateOf(-1) }
+    val arrangedApps = remember { mutableStateListOf<DemoApp>().apply { addAll(apps) } }
     val animatedLift by animateFloatAsState(
         targetValue = if (editMode) 1f else 0f,
         animationSpec = if (reduceMotion) spring(stiffness = 1000f) else spring(),
@@ -501,8 +558,14 @@ private fun HomeScreen(
     ) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Column {
-                Text("9:41  ·  Serein", style = MaterialTheme.typography.labelMedium)
-                Text("Saturday, November 14", style = MaterialTheme.typography.labelSmall)
+                Text(
+                    "${java.text.SimpleDateFormat("h:mm", java.util.Locale.getDefault()).format(java.util.Date())}  ·  Serein",
+                    style = MaterialTheme.typography.labelMedium,
+                )
+                Text(
+                    java.text.SimpleDateFormat("EEEE, MMMM d", java.util.Locale.getDefault()).format(java.util.Date()),
+                    style = MaterialTheme.typography.labelSmall,
+                )
             }
             Row {
                 IconButton(onClick = onNotifications) {
@@ -525,11 +588,35 @@ private fun HomeScreen(
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Text(if (editMode) "Hold and drag to rearrange" else "YOUR APPS", style = MaterialTheme.typography.labelMedium)
-            TextButton(onClick = { editMode = !editMode }) {
-                Text(if (editMode) "Done" else "Customize")
+            Row {
+                if (editMode) {
+                    TextButton(onClick = { showFolderEditor = true }) { Text("New folder") }
+                }
+                TextButton(onClick = { editMode = !editMode }) {
+                    Text(if (editMode) "Done" else "Customize")
+                }
             }
         }
-        val visibleApps = apps.drop(page * 8).take(8)
+        if (folders.isNotEmpty()) {
+            LazyRow(
+                Modifier.fillMaxWidth().height(58.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(folders, key = { it.name }) { folder ->
+                    GlassCard(
+                        Modifier.height(54.dp),
+                        alpha = transparency,
+                        onClick = { openFolder = folder },
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(Icons.Rounded.Folder, null, tint = accent)
+                            Text(folder.name, style = MaterialTheme.typography.labelLarge)
+                        }
+                    }
+                }
+            }
+        }
+        val visibleApps = arrangedApps.drop(page * 8).take(8)
         BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
             val cellWidth = maxWidth / 4
             val cellHeight = (maxHeight / 2).coerceAtLeast(92.dp)
@@ -546,33 +633,48 @@ private fun HomeScreen(
                                     .width(cellWidth)
                                     .height(cellHeight)
                                     .alpha(if (isDragging) 0.72f else 1f)
-                                    .pointerInput(index, editMode) {
+                                    .pointerInput(index) {
                                         detectDragGesturesAfterLongPress(
-                                            onDragStart = { dragIndex = index; dragOffsetX = 0f; dragOffsetY = 0f },
+                                            onDragStart = {
+                                                dragIndex = index
+                                                dragOffsetX = 0f
+                                                dragOffsetY = 0f
+                                                editMode = true
+                                            },
                                             onDragEnd = {
-                                                if (editMode && dragIndex >= 0) {
+                                                if (dragIndex >= 0) {
                                                     val dx = (dragOffsetX / cellWidth.toPx()).roundToInt()
                                                     val dy = (dragOffsetY / cellHeight.toPx()).roundToInt()
-                                                    val destination = (dragIndex + dx + dy * 4).coerceIn(0, visibleApps.lastIndex)
-                                                    editMode = destination != dragIndex
+                                                    val destination = (dragIndex + dx + dy * 4)
+                                                        .coerceIn(0, visibleApps.lastIndex)
+                                                    if (destination != dragIndex) {
+                                                        val sourceIndex = page * 8 + dragIndex
+                                                        val destinationIndex = page * 8 + destination
+                                                        val movedApp = arrangedApps.removeAt(sourceIndex)
+                                                        arrangedApps.add(destinationIndex, movedApp)
+                                                    }
                                                 }
                                                 dragIndex = -1
                                                 dragOffsetX = 0f
                                                 dragOffsetY = 0f
                                             },
-                                            onDragCancel = { dragIndex = -1 },
+                                            onDragCancel = {
+                                                dragIndex = -1
+                                                dragOffsetX = 0f
+                                                dragOffsetY = 0f
+                                            },
                                             onDrag = { change, amount ->
                                                 change.consume()
-                                                if (editMode) {
-                                                    dragOffsetX += amount.x
-                                                    dragOffsetY += amount.y
-                                                }
+                                                dragOffsetX += amount.x
+                                                dragOffsetY += amount.y
                                             },
                                         )
                                     },
                                 onClick = { onLaunch(app) },
                                 onLongPress = { editMode = true },
-                                scale = if (isDragging) 1.07f + animatedLift * 0.03f else 1f,
+                                scale = if (isDragging && !reduceMotion) 1.07f + animatedLift * 0.03f else 1f,
+                                dragOffsetX = if (isDragging) dragOffsetX else 0f,
+                                dragOffsetY = if (isDragging) dragOffsetY else 0f,
                             )
                         }
                     }
@@ -585,15 +687,124 @@ private fun HomeScreen(
         GlassCard(Modifier.fillMaxWidth(), alpha = transparency) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround, verticalAlignment = Alignment.CenterVertically) {
                 DockButton(Icons.Rounded.Apps, "All apps", onDrawer)
-                DockButton(Icons.Rounded.Phone, "Phone", { onLaunch(demoApps[0]) })
-                DockButton(Icons.Rounded.Sms, "Messages", { onLaunch(demoApps[1]) })
-                DockButton(Icons.Rounded.Settings, "Settings", onSettings)
+                dockApps.forEachIndexed { index, app ->
+                    DockButton(app.icon, app.name, {
+                        if (editMode) dockSlotToEdit = index else onLaunch(app)
+                    })
+                }
             }
+        }
+        if (editMode) {
+            Text(
+                "Tap a dock app to replace it, or drag an app to rearrange.",
+                style = MaterialTheme.typography.labelSmall,
+            )
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             TextButton(onClick = onRecents) { Text("Recent apps") }
             TextButton(onClick = onLock) { Text("Lock preview") }
         }
+    }
+    if (showFolderEditor) {
+        AlertDialog(
+            onDismissRequest = { showFolderEditor = false },
+            title = { Text("Create a folder") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextField(
+                        value = folderName,
+                        onValueChange = { folderName = it },
+                        label = { Text("Folder name") },
+                        singleLine = true,
+                    )
+                    Text("Choose at least two preview apps.")
+                    LazyColumn(Modifier.heightIn(max = 220.dp)) {
+                        items(apps, key = { it.name }) { app ->
+                            FilterChip(
+                                selected = app.name in selectedFolderApps,
+                                onClick = {
+                                    if (app.name in selectedFolderApps) selectedFolderApps.remove(app.name)
+                                    else selectedFolderApps.add(app.name)
+                                },
+                                label = { Text(app.name) },
+                                leadingIcon = if (app.name in selectedFolderApps) {
+                                    { Icon(Icons.Rounded.Check, contentDescription = null) }
+                                } else null,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                        enabled = folderName.isNotBlank() &&
+                            selectedFolderApps.size >= 2 &&
+                            folders.none { it.name.equals(folderName.trim(), ignoreCase = true) },
+                    onClick = {
+                        folders.add(
+                            HomeFolder(
+                                folderName.trim(),
+                                apps.filter { it.name in selectedFolderApps },
+                            ),
+                        )
+                        folderName = ""
+                        selectedFolderApps.clear()
+                        showFolderEditor = false
+                    },
+                ) { Text("Create") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showFolderEditor = false }) { Text("Cancel") }
+            },
+        )
+    }
+    openFolder?.let { folder ->
+        AlertDialog(
+            onDismissRequest = { openFolder = null },
+            title = { Text(folder.name) },
+            text = {
+                Column {
+                    folder.apps.forEach { app ->
+                        TextButton(
+                            onClick = {
+                                openFolder = null
+                                onLaunch(app)
+                            },
+                        ) {
+                            AppGlyph(app, 30.dp)
+                            Text(app.name, Modifier.padding(start = 10.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { openFolder = null }) { Text("Close") }
+            },
+        )
+    }
+    if (dockSlotToEdit >= 0) {
+        AlertDialog(
+            onDismissRequest = { dockSlotToEdit = -1 },
+            title = { Text("Choose a dock app") },
+            text = {
+                LazyColumn(Modifier.heightIn(max = 300.dp)) {
+                    items(apps, key = { it.name }) { app ->
+                        TextButton(
+                            onClick = {
+                                dockApps[dockSlotToEdit] = app
+                                dockSlotToEdit = -1
+                            },
+                        ) {
+                            AppGlyph(app, 30.dp)
+                            Text(app.name, Modifier.padding(start = 10.dp))
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { dockSlotToEdit = -1 }) { Text("Cancel") }
+            },
+        )
     }
 }
 
@@ -605,9 +816,17 @@ private fun AppIcon(
     onClick: () -> Unit,
     onLongPress: () -> Unit,
     scale: Float = 1f,
+    dragOffsetX: Float = 0f,
+    dragOffsetY: Float = 0f,
 ) {
     Column(
         modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+                translationX = dragOffsetX
+                translationY = dragOffsetY
+            }
             .combinedClickable(onClick = onClick, onLongClick = onLongPress)
             .padding(vertical = 7.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -624,7 +843,6 @@ private fun AppIcon(
             Icon(app.icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(25.dp))
         }
         Text(app.name, fontSize = textSize, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        if (scale > 1f) Spacer(Modifier.size(0.dp))
     }
 }
 
@@ -687,23 +905,31 @@ private fun NotificationScreen(
             }
         }
         LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items(items, key = { it.id }) { item ->
-                GlassCard(Modifier.fillMaxWidth(), alpha = transparency) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Column(
-                                Modifier.weight(1f).combinedClickable(onClick = { onExpand(item.id) }, onLongClick = { onDismiss(item.id) }),
-                                verticalArrangement = Arrangement.spacedBy(4.dp),
-                            ) {
-                                Text("${item.group}  ·  now", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
-                                Text(item.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                                Text(item.body, style = MaterialTheme.typography.bodyMedium, maxLines = if (expanded == item.id) 8 else 2)
-                            }
-                            IconButton(onClick = { onDismiss(item.id) }) {
-                                Icon(Icons.Rounded.Close, contentDescription = "Dismiss ${item.title}")
+            items(items.groupBy { it.group }.toList(), key = { it.first }) { (group, groupedItems) ->
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(group.uppercase(), style = MaterialTheme.typography.labelMedium)
+                    groupedItems.forEach { item ->
+                        GlassCard(Modifier.fillMaxWidth(), alpha = transparency) {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Column(
+                                        Modifier.weight(1f).combinedClickable(
+                                            onClick = { onExpand(item.id) },
+                                            onLongClick = { onDismiss(item.id) },
+                                        ),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    ) {
+                                        Text("now", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                                        Text(item.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                                        Text(item.body, style = MaterialTheme.typography.bodyMedium, maxLines = if (expanded == item.id) 8 else 2)
+                                    }
+                                    IconButton(onClick = { onDismiss(item.id) }) {
+                                        Icon(Icons.Rounded.Close, contentDescription = "Dismiss ${item.title}")
+                                    }
+                                }
+                                if (expanded == item.id) TextButton(onClick = { onDismiss(item.id) }) { Text("Dismiss") }
                             }
                         }
-                        if (expanded == item.id) TextButton(onClick = { onDismiss(item.id) }) { Text("Dismiss") }
                     }
                 }
             }

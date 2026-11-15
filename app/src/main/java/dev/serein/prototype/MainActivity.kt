@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.activity.compose.setContent
 import dev.serein.prototype.ui.PhonePrototypeApp
 
 class MainActivity : AppCompatActivity() {
@@ -13,16 +14,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(androidx.compose.ui.platform.ComposeView(this).apply {
-            setContent {
-                PhonePrototypeApp(
-                    onRequestBiometric = { onAuthenticated ->
-                        unlockAfterAuthentication = onAuthenticated
-                        requestBiometric()
-                    },
-                )
-            }
-        })
+        setContent {
+            PhonePrototypeApp(
+                onRequestBiometric = { onAuthenticated ->
+                    unlockAfterAuthentication = onAuthenticated
+                    requestBiometric()
+                },
+            )
+        }
     }
 
     private fun requestBiometric() {
